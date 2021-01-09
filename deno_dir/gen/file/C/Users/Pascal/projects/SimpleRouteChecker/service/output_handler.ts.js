@@ -1,0 +1,50 @@
+import { encode, Colors, format } from "../deps.ts";
+import { makeLines, getLongestString } from "../utils/utils.ts";
+import { url } from "../mod.ts";
+export class OutputHandler {
+    constructor(routes, depth = 2) {
+        this.depth = depth;
+        this.lastOutputLength = 0;
+        this.handleBeforeFetch = (routes, ext) => {
+            let lUrl = url.endsWith("/") ? url.slice(0, url.length - 1) : url;
+            let outputText = "Searching for " + lUrl;
+            for (let i = 0; i < this.depth; i++) {
+                const word = routes[i] || "";
+                const amountToSpace = (this.maxOutputLength - word.length) / 2;
+                let leftFiller = 0, rightFiller = 0;
+                if (Number.isInteger(amountToSpace)) {
+                    leftFiller = rightFiller = amountToSpace;
+                }
+                else {
+                    leftFiller = Math.floor(amountToSpace);
+                    rightFiller = Math.floor(amountToSpace + .5);
+                }
+                outputText += ` / [ ${makeLines(leftFiller)}${word}${makeLines(rightFiller)} ]`;
+            }
+            if (ext)
+                outputText += ` . [ ${ext} ]`;
+            const lines = "";
+            this.lastOutputLength = outputText.length;
+            Deno.writeAllSync(Deno.stdout, encode(outputText + lines + "\r"));
+        };
+        this.handleRouteFound = (route, url) => {
+            Deno.writeAllSync(Deno.stdout, encode("\r" + OutputHandler.createDateOutput() + " found " + Colors.yellow(route) + makeLines(this.lastOutputLength)));
+        };
+        this.handleProcessFinished = ({ routesFound, filesFound, routesTested }) => {
+            console.log(`\nTested ${routesTested} routes${makeLines(this.lastOutputLength)}`);
+            console.log(`\rFound ${routesFound} routes${makeLines(this.lastOutputLength)}`);
+            filesFound && console.log(`\rFound ${filesFound} files${makeLines(this.lastOutputLength)}`);
+            console.log("");
+            Deno.exit();
+        };
+        this.maxOutputLength = getLongestString(routes).trimEnd().length;
+    }
+    static logError(s) {
+        console.log("[" + Colors.red("Error") + "] " + s);
+    }
+    static logWithDate(s) {
+        console.log(this.createDateOutput() + s);
+    }
+}
+OutputHandler.createDateOutput = () => "[" + Colors.brightCyan(format(new Date(), "HH:mm:ss")) + "]";
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoib3V0cHV0X2hhbmRsZXIuanMiLCJzb3VyY2VSb290IjoiIiwic291cmNlcyI6WyJvdXRwdXRfaGFuZGxlci50cyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiQUFBQSxPQUFPLEVBQUUsTUFBTSxFQUFFLE1BQU0sRUFBRSxNQUFNLEVBQUUsTUFBTSxZQUFZLENBQUE7QUFDbkQsT0FBTyxFQUFFLFNBQVMsRUFBRSxnQkFBZ0IsRUFBRSxNQUFNLG1CQUFtQixDQUFBO0FBRS9ELE9BQU8sRUFBRSxHQUFHLEVBQUUsTUFBTSxXQUFXLENBQUE7QUFHL0IsTUFBTSxPQUFPLGFBQWE7SUFLdEIsWUFBWSxNQUFnQixFQUFVLFFBQWdCLENBQUM7UUFBakIsVUFBSyxHQUFMLEtBQUssQ0FBWTtRQUgvQyxxQkFBZ0IsR0FBRyxDQUFDLENBQUE7UUFPNUIsc0JBQWlCLEdBQWdCLENBQUMsTUFBZ0IsRUFBRSxHQUFZLEVBQUUsRUFBRTtZQUVoRSxJQUFJLElBQUksR0FBRyxHQUFHLENBQUMsUUFBUSxDQUFDLEdBQUcsQ0FBQyxDQUFDLENBQUMsQ0FBQyxHQUFHLENBQUMsS0FBSyxDQUFDLENBQUMsRUFBRSxHQUFHLENBQUMsTUFBTSxHQUFHLENBQUMsQ0FBQyxDQUFDLENBQUMsQ0FBQyxHQUFHLENBQUE7WUFDakUsSUFBSSxVQUFVLEdBQUcsZ0JBQWdCLEdBQUcsSUFBSSxDQUFBO1lBRXhDLEtBQUssSUFBSSxDQUFDLEdBQUcsQ0FBQyxFQUFFLENBQUMsR0FBRyxJQUFJLENBQUMsS0FBSyxFQUFFLENBQUMsRUFBRSxFQUFFO2dCQUdqQyxNQUFNLElBQUksR0FBRyxNQUFNLENBQUMsQ0FBQyxDQUFDLElBQUksRUFBRSxDQUFBO2dCQUU1QixNQUFNLGFBQWEsR0FBRyxDQUFDLElBQUksQ0FBQyxlQUFlLEdBQUcsSUFBSSxDQUFDLE1BQU0sQ0FBQyxHQUFHLENBQUMsQ0FBQTtnQkFDOUQsSUFBSSxVQUFVLEdBQUcsQ0FBQyxFQUNkLFdBQVcsR0FBRyxDQUFDLENBQUE7Z0JBRW5CLElB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
