@@ -1,0 +1,11 @@
+.php
+.asp
+.jsp
+.cgi
+.pl
+.cfm
+.txt
+.shtml
+.jhtml
+.html
+.jpg
