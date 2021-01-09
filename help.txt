@@ -1,0 +1,8 @@
+Usage: SimpleRouteChecker [hostname][eg. path] 
+Flags: 
+    -h, --help: Prints this help summary Page
+    -p: Check route with a parameter eg. hostname/route/1
+    -l, --log: Create a log file with the found routes
+    -f: Include Files
+    -F: [filepath]: Include Files with Extensions from File
+    -d, --depth: How many nested routes 
