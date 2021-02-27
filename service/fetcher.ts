@@ -89,11 +89,11 @@ export class Fetcher {
             await this.search(i)
 
         }
-        await pause(200)
+        // await pause(2000)
         await Deno.writeAll(Deno.stdout, encode("\r" + OutputHandler.createDateOutput() + " Finished!" + makeLines(100)))
 
         // wait for incoming fetches
-        await pause(2000)
+        // await pause(2000)
 
         this.processFinished && this.processFinished({
             routesFound: this._routesFound.length,
@@ -113,7 +113,7 @@ export class Fetcher {
                 this.slots[i] = Number(key)
                 const routes = this.slots.map(slot => this.words[slot])
 
-                await this.fetch(routes)
+             await this.fetch(routes)
                 if (this.extensions) await this.searchForFile(routes)
 
 
@@ -157,12 +157,12 @@ export class Fetcher {
 
         if (ext) requestPath += ext
 
-        fetch(requestPath).then(res => {
+        fetch(requestPath, {keepalive: false, headers: [["Keep-Alive", "timeout=0, max=0"]]}).then(res => {
             this._routesTested++
             if (res.status !== 404 && res.status !== 502) {
                 this._routesFound.push(requestPath)
                 this.routeFound && this.routeFound(requestPath, this.url)
-            }
+            } res.arrayBuffer()
         })
     }
 
